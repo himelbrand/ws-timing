@@ -3,20 +3,27 @@ import sys
 import datetime
 import pause
 import argparse
+from duckduckpy import query
+from time import time 
 
 def time_query(q):
     now = datetime.datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     # os.system('sudo systemd-resolve --flush-caches')
-    cmd = 'googler --np {}'.format(q) 
+    # cache = dict()
+    # cmd = 'googler --np {}'.format(q) 
     try:
-        split = os.popen(cmd).read().split('\n')
-        google_time = split[1]
-        fetch_time = split[0]
+        stime = time()
+        query(q,container='dict',no_html=True)
+        fetch_time = int((time() - stime)*1000)
+        # split = os.popen(cmd).read().split('\n')
+        # google_time = split[1]
+        # fetch_time = split[0]
     except: #timed out 3 times
-        google_time = -1
+        # google_time = -1
         fetch_time = -1
-    return '{}\t{}\t{}\t{}\n'.format(q,google_time,fetch_time,dt_string)
+    return '{}\t{}\t{}\n'.format(q,fetch_time,dt_string)
+    # return '{}\t{}\t{}\t{}\n'.format(q,google_time,fetch_time,dt_string)
     
 
 def main(start,end,part,filename,samples):
@@ -27,9 +34,9 @@ def main(start,end,part,filename,samples):
     lines = [line.strip() for line in lines[start:end]]
     now = datetime.datetime.now()
     with open('{}.queries{}.times'.format(now.strftime('%Y%h%d_%H:%M'),part), 'w') as f:
-        for query in lines:
+        for q in lines:
             for _ in range(samples):
-                line = time_query(query)
+                line = time_query(q)
                 f.write(line)
                 i += 1
                 if i%100 == 0:
