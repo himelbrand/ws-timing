@@ -4,7 +4,7 @@ import datetime
 import pause
 import argparse
 from duckduckpy import query
-from time import time 
+from time import time,sleep
 
 def time_query(q):
     now = datetime.datetime.now()
@@ -20,6 +20,7 @@ def time_query(q):
         # google_time = split[1]
         # fetch_time = split[0]
     except: #timed out 3 times
+        print(f'query: {q} - Error! - {dt_string}')
         # google_time = -1
         fetch_time = -1
     return '{}\t{}\t{}\n'.format(q,fetch_time,dt_string)
@@ -36,6 +37,7 @@ def main(start,end,part,filename,samples):
     with open('{}.queries{}.times'.format(now.strftime('%Y%h%d_%H:%M'),part), 'w') as f:
         for q in lines:
             for _ in range(samples):
+                sleep(0.2)
                 line = time_query(q)
                 f.write(line)
                 i += 1
