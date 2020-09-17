@@ -34,7 +34,7 @@ def main(start,end,part,filename,samples):
     i = 1
     lines = [line.strip() for line in lines[start:end]]
     now = datetime.datetime.now()
-    with open('{}.queries{}.times'.format(now.strftime('%Y%h%d_%H:%M'),part), 'w') as f:
+    with open('{}.{}{}.times'.format(now.strftime('%Y%h%d_%H:%M'),filename[4:],part), 'w') as f:
         for q in lines:
             for _ in range(samples):
                 sleep(0.2)
