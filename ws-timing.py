@@ -79,6 +79,7 @@ if __name__ == '__main__':
     while i < args.iters:
         start_time = datetime.datetime.now()
         main(start,end,args.vm,args.input,args.samples)
-        start_time += datetime.timedelta(days=args.days,hours=args.hours)
-        pause.until(start_time)
+        if args.iter-1 < i:
+            start_time += datetime.timedelta(days=args.days,hours=args.hours)
+            pause.until(start_time)
         i+=1
