@@ -7,28 +7,34 @@ import argparse
 from duckduckpy import query
 from time import time,sleep
 
-def time_query(q):
+def time_query(q,google):
     now = datetime.datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     # os.system('sudo systemd-resolve --flush-caches')
     # cache = dict()
-    # cmd = 'googler --np {}'.format(q) 
+    cmd = 'googler --np {}'.format(q) 
     try:
         stime = time()
-        query(q,container='dict',no_html=True)
-        fetch_time = int((time() - stime)*1000)
-        # split = os.popen(cmd).read().split('\n')
-        # google_time = split[1]
-        # fetch_time = split[0]
+        if google:
+            split = os.popen(cmd).read().split('\n')
+            google_time = split[1]
+            fetch_time = split[0]
+        else:
+            query(q,container='dict',no_html=True)
+            fetch_time = int((time() - stime)*1000)
     except: #timed out 3 times
         print(f'query: {q} - Error! - {dt_string}')
-        # google_time = -1
-        fetch_time = -1
-    return '{}\t{}\t{}\n'.format(q,fetch_time,dt_string)
-    # return '{}\t{}\t{}\t{}\n'.format(q,google_time,fetch_time,dt_string)
+        if google:
+            google_time = -1
+            fetch_time = int((time() - stime)*1000)
+    if google:
+        return '{}\t{}\t{}\t{}\n'.format(q,google_time,fetch_time,dt_string)
+    else:
+        return '{}\t{}\t{}\n'.format(q,fetch_time,dt_string)
+
     
 
-def main(start,end,part,filename,samples):
+def main(start,end,part,filename,samples,google):
     f = open(filename)
     lines = f.readlines()
     f.close()
@@ -39,14 +45,14 @@ def main(start,end,part,filename,samples):
         for q in lines:
             for _ in range(samples):
                 sleep(0.2)
-                line = time_query(q)
+                line = time_query(q,google)
                 f.write(line)
                 i += 1
                 if i%100 == 0:
                     f.flush()
 
 def parse_args():
-    parser = argparse.ArgumentParser(prog='ws-timing.py',description='Collects query resolving times from google, by a list of queries.')
+    parser = argparse.ArgumentParser(prog='ws-timing.py',description='Collects query resolving times from duckduckgo or google, by a list of queries.')
     parser.add_argument('max_vm',  type=int,help='a positive integer for the max number of vms.')
     parser.add_argument('vm', type=int,help='an integer for the vm number.')
     parser.add_argument('iters', type=int, help='number of iterations to run the script over the segment of urls.')
@@ -54,6 +60,7 @@ def parse_args():
     parser.add_argument('-dd',dest='days', metavar='D',default=1, type=int, help='an integer for the iteration delay in days (default: 1).')
     parser.add_argument('-hd',dest='hours', metavar='H',default=1, type=int, help='an integer for the iteration delay in hours (default: 1).')
     parser.add_argument('-s',dest='samples',default=3,type=int, help='an integer defining how many time smpales for each query (default: 3)')
+    parser.add_argument('-g',dest='google', action='store_true',help='use this flag to time google instead of duckduckgo')
     args = parser.parse_args()
     if args.max_vm <= 0:
         raise argparse.ArgumentTypeError(f'{args.max_vm} is an invalid positive integer.')
@@ -78,7 +85,7 @@ if __name__ == '__main__':
     i = 0
     while i < args.iters:
         start_time = datetime.datetime.now()
-        main(start,end,args.vm,args.input,args.samples)
+        main(start,end,args.vm,args.input,args.samples,args.google)
         if args.iter-1 < i:
             start_time += datetime.timedelta(days=args.days,hours=args.hours)
             pause.until(start_time)
