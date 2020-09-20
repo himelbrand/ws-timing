@@ -21,7 +21,7 @@ def time_query(q,google):
             fetch_time = split[0]
         else:
             query(q,container='dict',no_html=True)
-            fetch_time = int((time() - stime)*1000)
+        fetch_time = int((time() - stime)*1000)
     except: #timed out 3 times
         print(f'query: {q} - Error! - {dt_string}')
         if google:
