@@ -6,7 +6,6 @@ import pause
 import argparse
 from duckduckpy import query
 from time import time,sleep
-
 def time_query(q,google):
     now = datetime.datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -21,12 +20,12 @@ def time_query(q,google):
             fetch_time = split[0]
         else:
             query(q,container='dict',no_html=True)
-        fetch_time = int((time() - stime)*1000)
+            fetch_time = int((time() - stime)*1000)
     except: #timed out 3 times
         print(f'query: {q} - Error! - {dt_string}')
         if google:
             google_time = -1
-            fetch_time = int((time() - stime)*1000)
+        fetch_time = int((time() - stime)*1000)
     if google:
         return '{}\t{}\t{}\t{}\n'.format(q,google_time,fetch_time,dt_string)
     else:
@@ -89,4 +88,3 @@ if __name__ == '__main__':
         if args.iter-1 < i:
             start_time += datetime.timedelta(days=args.days,hours=args.hours)
             pause.until(start_time)
-        i+=1
