@@ -9,8 +9,6 @@ from time import time,sleep
 def time_query(q,google):
     now = datetime.datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    # os.system('sudo systemd-resolve --flush-caches')
-    # cache = dict()
     cmd = 'googler --np {}'.format(q) 
     try:
         stime = time()
